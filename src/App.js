@@ -8,6 +8,8 @@ function App() {
  
   const [respuesta, setRespuesta] = useState()
   const [pago, setPago] = useState(paymentPayload1)
+  const [url, setUrl] = useState()
+  const [paso, setPaso] = useState(false)
  
   const handleClick = ()=> {
   axios.post('https://giftcardsapidev.azurewebsites.net/api/orders', payloadOrder)
@@ -21,6 +23,7 @@ function App() {
        }))
         console.log(res.data.object.id)
       })
+     
       // .catch((err) => {
       //   setRespuesta(err.data.result)
       //   console.log(err)
@@ -28,12 +31,15 @@ function App() {
   }
   
   const handlePayment = () => {
-   
+   setPaso(!paso)
     axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', (pago))
     .then((res) => {
-      console.log(JSON.stringify(res))
+      console.log(res.data.url)
+      setUrl(res.data.url)
+      console.log(url)
         }
       )
+      
       
     }
   
@@ -46,6 +52,8 @@ function App() {
       {JSON.stringify(respuesta)}
       
       {respuesta === 'Success' ? (<div><br /><button onClick={handlePayment} >Pago</button></div>) : null}
+      <br />
+      {paso === true && <iframe src={url} width="600px" height="500px"></iframe>}
   
       </header>
     </div>
