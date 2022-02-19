@@ -7,13 +7,19 @@ import './App.css';
 function App() {
  
   const [respuesta, setRespuesta] = useState()
-  const [pasarPago, setPasarPago] = useState()
+  const [pago, setPago] = useState(paymentPayload1)
  
   const handleClick = ()=> {
-  const place = axios.post('https://giftcardsapidev.azurewebsites.net/api/orders', payloadOrder)
+  axios.post('https://giftcardsapidev.azurewebsites.net/api/orders', payloadOrder)
       .then((res) => {
         setRespuesta(res.data.result)
         console.log(res.data.result)
+       setPago(prevPago =>({
+         ...prevPago,
+         orderId: res.data.object.id
+
+       }))
+        console.log(res.data.object.id)
       })
       // .catch((err) => {
       //   setRespuesta(err.data.result)
@@ -21,13 +27,16 @@ function App() {
       // })
   }
   
-  // const handlePayment = () => {
-  //   const place2 = axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', JSON.parse(paymentPayload1.orderId))
-  //   .then((res) => {
-  //     setPasarPago(res)
-  //     console.log(JSON.stringify(pasarPago.orderId) + " clicked")
-  //   })
-  // }
+  const handlePayment = () => {
+   
+    axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', (pago))
+    .then((res) => {
+      console.log(JSON.stringify(res))
+        }
+      )
+      
+    }
+  
 
   return (
     <div className="App">
@@ -36,7 +45,7 @@ function App() {
       <br />
       {JSON.stringify(respuesta)}
       
-      {respuesta === 'Success' ? (<div><br /><button >Pago</button></div>) : null}
+      {respuesta === 'Success' ? (<div><br /><button onClick={handlePayment} >Pago</button></div>) : null}
   
       </header>
     </div>
