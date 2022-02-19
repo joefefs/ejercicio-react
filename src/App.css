@@ -25,3 +25,7 @@ button:hover {
   opacity: 0.9;
   background-color: #ffe3d8;
 }
+
+.continue {
+  display: none;
+}
