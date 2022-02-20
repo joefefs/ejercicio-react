@@ -4,6 +4,8 @@ import payloadOrder from './payloadOrder';
 import paymentPayload1 from './paymentPayload1';
 import './App.css';
 import {BrowserRouter, Routes, Route, Link } from "react-router-dom"
+import paymentPayload2 from './paymentPayload2';
+import PaymentFrame from './components/PaymentFrame';
 
 function App() {
  
@@ -21,7 +23,8 @@ function App() {
   axios.post('https://giftcardsapidev.azurewebsites.net/api/orders', payloadOrder)
       .then((res) => {
         setRespuesta(res.data.result)
-        console.log(res.data.result)
+        console.log(JSON.stringify(res.data.result) + " respuesta")
+     
        setPago(prevPago =>({
          ...prevPago,
          orderId: res.data.object.id
@@ -41,6 +44,7 @@ function App() {
   const handlePayment = () => {
       axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', pago)
       .then((res) => {
+       
         setUrl(prevUrl => {
           if(res.data.url){ 
              return ({
@@ -69,9 +73,11 @@ function App() {
 
     let hadSuccess
     if(url.hasSucceed === true) {
-          hadSuccess = (<iframe src={url.url} width="600px" height="500px"></iframe>)
+          hadSuccess = (<PaymentFrame url={url}/>)
+         
         } else if (url.error) {
           hadSuccess = (
+            
 
           <p>{url.error}</p>
           )
@@ -81,7 +87,7 @@ function App() {
     setCart(prevCart => !prevCart)
     console.log("cliked")
   }
-  
+
   const closeClosingWindow = () => {
     console.log("click continue")
     setCart(prevCart => !prevCart)
@@ -110,14 +116,9 @@ function App() {
       {url.url && 
         <Link 
           to="/cart/callback"
-          onClick={handleLink}>
-          Cart
+          > Cart
         </Link>}
-      {cart && <div className='cerrar-pag'>
-        <p>¿Deseas cerrar la página?</p>
-        <button onClick={closePaymentWindow}>Cerrar</button>
-        <button onClick={closeClosingWindow}>Cancelar</button>
-      </div>}
+      
       {hadSuccess}  
     
       </header>
