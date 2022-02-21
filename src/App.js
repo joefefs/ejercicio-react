@@ -15,7 +15,6 @@ function App() {
    
     const [payment, setPayment] = useState(paymentPayload1)
     
-  
     const [iframe, setIFrame] = useState({
       url: "",
       status: "",
@@ -32,10 +31,10 @@ function App() {
     axios.post('https://giftcardsapidev.azurewebsites.net/api/orders', payloadOrder)
         .then((res) => {
           setRespuesta(res.data.result)
-          console.log(JSON.stringify(res.data.result) + " respuesta")
+          console.log(JSON.stringify(res.data.result))
        
-         setPayment(prevPago =>({
-           ...prevPago,
+         setPayment(prevPayment =>({
+           ...prevPayment,
            orderId: res.data.object.id
   
          }))
@@ -43,9 +42,9 @@ function App() {
         })
        
         .catch(() => {
-          setPayment(prevPago => ({
-            ...prevPago,
-            error: 'Hubo un error: 400 - Bad request.'
+          setPayment(prevPayment => ({
+            ...prevPayment,
+            error: 'Error: Partner inválido.'
           }))
          })
     }  
@@ -57,7 +56,6 @@ function App() {
       }))
         axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', payment)
         .then((res) => {
-         
           setIFrame(prevIFrame => {
             if(res.data.url){ 
                return ({
@@ -75,11 +73,10 @@ function App() {
           return ({
             ...prevIFrame,
             hasSucceed: false,
-            error: "Hubo un error: 400 - Bad request."
+            error: "Error: Número de órden no disponible."
           })
         })
-        console.log(err)
-        
+        console.log(err) 
       })
     }
       let hadSuccess
@@ -95,30 +92,30 @@ function App() {
           }
     
     const passPayload2 = () => {
-       setPayment(prevPayment => paymentPayload2)
+       setPayment(paymentPayload2)
 
         // Automáticamente arroja error porque la data de paymentPayload2 está incompleta
               
-            console.log(payment)
+       console.log(payment)
 
-            const removeIFrame = () => {
-              document.getElementById("payment-iframe"). remove();
-            }
-            removeIFrame();
-              
-              axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', payment)
-              .then((res)=> {
-              console.log(res)
-              })
-              .catch((err) => {
-          
-                setPayment(prevPayment => ({
-                  ...prevPayment,
-                  error: true,
-                  message: "Error al realizar pago con 3DSecure"
-                }))
-              })
-            }
+       const removeIFrame = () => {
+           document.getElementById("payment-iframe"). remove();
+          }
+       removeIFrame();
+
+       axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', payment)
+        .then((res)=> {
+            console.log(res)
+            })
+        .catch((err) => {
+            setPayment(prevPayment => ({
+                ...prevPayment,
+                error: true,
+                message: "Error al realizar pago con 3DSecure"
+              }))
+            })
+          }
+
     return (
       <div>
       <div className="App">
