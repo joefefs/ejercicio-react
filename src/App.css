@@ -1,19 +1,25 @@
-.App {
-  text-align: center;
+body {
+  background-color: rgba(240,240,240);
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.App {
+  /* display: flex; */
+  text-align: center;
+  margin: auto;
+  width: 50%;
+  background-color: white;
+  margin-top: 50px;
+  border-radius: 15px;
+  box-shadow: 0px 10px 10px rgba(128,128,128, .5);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  
 }
-
-button {
+.img{
+margin-top: 25px;
+border-radius: 25px;
+}
+button{
   cursor: pointer;
   padding: 10px;
   border-radius: 1000px;
@@ -21,11 +27,62 @@ button {
   background-color:lightsalmon;
   font-weight: 700;
 }
-button:hover {
+
+a {
+  color: black;
+  text-decoration: none;
+}
+a:hover{
   opacity: 0.9;
   background-color: #ffe3d8;
 }
+button:hover {
+  opacity: 0.9;
+  background-color: #ffe3d8;
+  
+}
 
-.continue {
+.create-order{
+  margin-top: 25px;
+}
+
+.iframe-container{
+  display: flex;
+  align-items: center;
+}
+
+iframe {
+  width: auto;
+  border: none;
+  margin: 40px auto;
+  
+}
+
+.link{
+  display: block;
+}
+
+.cerrar-pag{
+  padding-top: 20px;
+  text-align: center;
+  margin: 20px auto;
+  max-width: 600px;
+  min-height: 200px;
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0px 10px 10px rgba(128,128,128, .5);
+}
+
+.oculto{
   display: none;
+}
+
+.callback-page-btn{
+  background-color: white;
+  text-decoration: underline;
+}
+
+.callback-page-btn:hover{
+  background-color: white;
+  text-decoration: underline;
 }

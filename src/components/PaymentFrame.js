@@ -2,7 +2,7 @@ import React from 'react'
 
  const PaymentFrame =(props) => {
 return(
-    (<iframe src={props.url.url} width="600px" height="500px"></iframe>)
+    (<iframe src={props.iframe.url} width="600px" height="500px"></iframe>)
 )
 }
 

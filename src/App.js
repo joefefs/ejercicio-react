@@ -1,129 +1,155 @@
 import axios from 'axios';
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import payloadOrder from './payloadOrder';
 import paymentPayload1 from './paymentPayload1';
 import './App.css';
-import {BrowserRouter, Routes, Route, Link } from "react-router-dom"
 import paymentPayload2 from './paymentPayload2';
-import PaymentFrame from './components/PaymentFrame';
+import Cart from './routes/Cart';
 
 function App() {
- 
   const [respuesta, setRespuesta] = useState()
-  const [pago, setPago] = useState(paymentPayload1)
-  const [url, setUrl] = useState({
-    url: "",
-    status: "",
-    hasSucceed: null,
-    error: ""
-  })
-  const [cart, setCart] = useState(false)
- 
-  const handleClick = ()=> {
-  axios.post('https://giftcardsapidev.azurewebsites.net/api/orders', payloadOrder)
-      .then((res) => {
-        setRespuesta(res.data.result)
-        console.log(JSON.stringify(res.data.result) + " respuesta")
-     
-       setPago(prevPago =>({
-         ...prevPago,
-         orderId: res.data.object.id
-
-       }))
-        console.log(res.data.object.id)
-      })
-     
-      .catch(() => {
-        setPago(prevPago => ({
-          ...prevPago,
-          error: 'Hubo un error: 400 - Bad request.'
-        }))
-       })
-  }
-  
-  const handlePayment = () => {
-      axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', pago)
-      .then((res) => {
-       
-        setUrl(prevUrl => {
-          if(res.data.url){ 
-             return ({
-               ...prevUrl,
-                url: res.data.url,
-                status: res.status,
-                hasSucceed: true
-              })
-      } 
-      console.log(prevUrl)
-      })
-      
+  const [isVissible, setIsVissible] = useState({
+      createOrder: true,
+      makePayment: false
     })
-    .catch((err) =>{
-      setUrl(prevUrl => {
-        return ({
-          ...prevUrl,
-          hasSucceed: false,
-          error: "Hubo un error: 400 - Bad request."
+   
+    const [payment, setPayment] = useState(paymentPayload1)
+    
+  
+    const [iframe, setIFrame] = useState({
+      url: "",
+      status: "",
+      hasSucceed: null,
+      error: ""
+    })
+
+    const createOrder = ()=> {
+      setIsVissible(prevIsVissible => ({
+        ...prevIsVissible,
+        createOrder: false,
+        makePayment: true
+      }))
+    axios.post('https://giftcardsapidev.azurewebsites.net/api/orders', payloadOrder)
+        .then((res) => {
+          setRespuesta(res.data.result)
+          console.log(JSON.stringify(res.data.result) + " respuesta")
+       
+         setPayment(prevPago =>({
+           ...prevPago,
+           orderId: res.data.object.id
+  
+         }))
+          console.log(res.data.object.id)
+        })
+       
+        .catch(() => {
+          setPayment(prevPago => ({
+            ...prevPago,
+            error: 'Hubo un error: 400 - Bad request.'
+          }))
+         })
+    }  
+    const makePayment = () => {
+  
+      setIsVissible(prevIsVissible => ({
+        createOrder: false,
+        makePayment: false
+      }))
+        axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', payment)
+        .then((res) => {
+         
+          setIFrame(prevIFrame => {
+            if(res.data.url){ 
+               return ({
+                 ...prevIFrame,
+                  url: res.data.url,
+                  status: res.status,
+                  hasSucceed: true
+                })
+        } 
+        console.log(prevIFrame)
         })
       })
-      console.log(err)
-      
-    })
-  }
-
-    let hadSuccess
-    if(url.hasSucceed === true) {
-          hadSuccess = (<PaymentFrame url={url}/>)
-         
-        } else if (url.error) {
-          hadSuccess = (
-            
-
-          <p>{url.error}</p>
-          )
-        }
-  
-  const handleLink = () => {
-    setCart(prevCart => !prevCart)
-    console.log("cliked")
-  }
-
-  const closeClosingWindow = () => {
-    console.log("click continue")
-    setCart(prevCart => !prevCart)
-
-  }
-  const closePaymentWindow = () => {
-    console.log("close Pay")
-    setUrl({
-      url: "",
-    status: "",
-    hasSucceed: null,
-    error: ""
-    })
-    setCart(prevCart => !prevCart)
-  }
-  return (
-    <div className="App">
-      <header className="App-header">
-      
-      <button onClick={handleClick}> Crear orden </button>
-      <br />
-      {pago.error ? (<p>{pago.error}</p>): null }
-      
-      {respuesta === 'Success' ? (<div><br /><button onClick={handlePayment} >Pago</button></div>) : null}
-      <br />
-      {url.url && 
-        <Link 
-          to="/cart/callback"
-          > Cart
-        </Link>}
-      
-      {hadSuccess}  
+      .catch((err) =>{
+        setIFrame(prevIFrame => {
+          return ({
+            ...prevIFrame,
+            hasSucceed: false,
+            error: "Hubo un error: 400 - Bad request."
+          })
+        })
+        console.log(err)
+        
+      })
+    }
+      let hadSuccess
+      if(iframe.hasSucceed === true) {
+            console.log(iframe.url)
+             hadSuccess =  <Cart url={iframe.url}/>
+           
+          } else if (iframe.error) {
+            hadSuccess = (
+              
+            <p>{iframe.error}</p>
+            )
+          }
     
-      </header>
-    </div>
-  );
-}
+    const passPayload2 = () => {
+       setPayment(prevPayment => paymentPayload2)
+
+        // Automáticamente arroja error porque la data de paymentPayload2 está incompleta
+              
+            console.log(payment)
+
+            const removeIFrame = () => {
+              document.getElementById("payment-iframe"). remove();
+            }
+            removeIFrame();
+              
+              axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', payment)
+              .then((res)=> {
+              console.log(res)
+              })
+              .catch((err) => {
+          
+                setPayment(prevPayment => ({
+                  ...prevPayment,
+                  error: true,
+                  message: "Error al realizar pago con 3DSecure"
+                }))
+              })
+            }
+    return (
+      <div>
+      <div className="App">
+          <img className={iframe.hasSucceed ? "img oculto" : "img"} src="https://picsum.photos/250" />
+          {isVissible.createOrder && (<div>
+        <br />
+        <button className="create-order" onClick={createOrder}> Crear orden </button></div>)}
+        
+        {payment.error ? (<p>{payment.error}</p>): null }
+        
+        {respuesta === 'Success' ? 
+          (<div>
+              {isVissible.makePayment && 
+              <button className="create-order" onClick={makePayment} >Pagar</button>}
+          </div>) 
+          : null}
+        <br />
+        <div className="link">
+            {iframe.url && 
+              <button className="callback-page-btn"
+                onClick={passPayload2}
+              > 
+                Callback page
+              </button>}
+              {payment.error && <h3>{payment.message}</h3>}
+         </div>
+          <div className="iframe-container">{hadSuccess}</div>      
+      </div>   
+      </div>
+    );
+  }
+  
 
 export default App;
