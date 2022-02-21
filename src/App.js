@@ -1,10 +1,10 @@
 import axios from 'axios';
 import React, {useState} from 'react'
-import payloadOrder from './payloadOrder';
-import paymentPayload1 from './paymentPayload1';
+import payloadOrder from './data/payloadOrder';
+import paymentPayload1 from './data/paymentPayload1';
 import './App.css';
-import paymentPayload2 from './paymentPayload2';
-import Cart from './routes/Cart';
+import paymentPayload2 from './data/paymentPayload2';
+import PaymentFrame from './components/PaymentFrame'
 
 function App() {
   const [respuesta, setRespuesta] = useState()
@@ -82,7 +82,9 @@ function App() {
       let hadSuccess
       if(iframe.hasSucceed === true) {
             console.log(iframe.url)
-             hadSuccess =  <Cart url={iframe.url}/>
+             hadSuccess =  (
+               <PaymentFrame url={iframe.url} />
+                )
            
           } else if (iframe.error) {
             hadSuccess = (
@@ -115,6 +117,10 @@ function App() {
               }))
             })
           }
+    let hidePaymentBtn
+          payment.error 
+            ? hidePaymentBtn='callback-page-btn oculto' 
+            : hidePaymentBtn= 'callback-page-btn'
 
     return (
       <div>
@@ -135,12 +141,15 @@ function App() {
         <br />
         <div className="link">
             {iframe.url && 
-              <button className="callback-page-btn"
+              <button 
+                className={hidePaymentBtn}
                 onClick={passPayload2}
               > 
                 Callback page
               </button>}
-              {payment.error && <h3>{payment.message}</h3>}
+              <div>
+                {payment.error && <h3>{payment.message}</h3>}
+              </div>
          </div>
           <div className="iframe-container">{hadSuccess}</div>      
       </div>   
@@ -148,5 +157,4 @@ function App() {
     );
   }
   
-
 export default App;
