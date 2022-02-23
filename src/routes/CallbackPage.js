@@ -1,16 +1,15 @@
-import React, {useEffect} from 'react'
+import React, { useEffect } from "react";
 
 const CallbackPage = () => {
-  useEffect(()=> {
-    window.top.postMessage('3DS-authentication-complete');
-  },[])
+  useEffect(() => {
+    window.top.postMessage("3DS-authentication-complete");
+  }, []);
 
-  return(
+  return (
     <div className="App">
-         <h2 className="callback-page">This is the callbackpage</h2>
-        
+      <h2 className="callback-page">This is the callbackpage.</h2>
     </div>
-  )
-  }
+  );
+};
 
-export default CallbackPage
+export default CallbackPage;
