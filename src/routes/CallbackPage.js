@@ -5,7 +5,7 @@ const CallbackPage = () => {
     window.top.postMessage("3DS-authentication-complete");
   }, []);
 
-  setTimeout(() => window.close(), 2000);
+  setTimeout(() => window.close(), 1000);
 
   return (
     <div className="App">

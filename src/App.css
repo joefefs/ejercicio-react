@@ -73,3 +73,15 @@ li {
  margin: 20px;
  padding: 10px;
 }
+
+.card{
+  background-color: lightskyblue;
+  width: 330px;
+  height: 200px;
+  text-align: center;
+  border-radius: 25px;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  margin: 10px;
+}

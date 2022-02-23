@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import payloadOrder from "./data/payloadOrder";
 import paymentPayload1 from "./data/paymentPayload1";
 import "./App.css";
+import GiftCard from "./GiftCard";
 
 function App() {
   const [respuesta, setRespuesta] = useState();
@@ -118,10 +119,10 @@ function App() {
   return (
     <div>
       <div className="App">
-        <img
-          className={iframe.hasSucceed ? "img oculto" : "img"}
-          src="https://picsum.photos/250"
-        />
+        <div className={iframe.hasSucceed ? "img oculto" : "img"}>
+          <GiftCard />
+        </div>
+
         {isVissible.createOrder && (
           <div>
             <br />
@@ -152,7 +153,7 @@ function App() {
             id="payment-iframe"
             title="payment-window"
             width="600px"
-            height="auto"
+            height="500px"
           ></iframe>
         </div>
         <ul className="list">
