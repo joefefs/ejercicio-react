@@ -3,58 +3,55 @@ import React, {useState} from 'react'
 import payloadOrder from './data/payloadOrder';
 import paymentPayload1 from './data/paymentPayload1';
 import './App.css';
-import paymentPayload2 from './data/paymentPayload2';
-import PaymentFrame from './components/PaymentFrame'
 
 function App() {
   const [respuesta, setRespuesta] = useState()
   const [isVissible, setIsVissible] = useState({
       createOrder: true,
-      makePayment: false
+      sendPayload: false
     })
-   
-    const [payment, setPayment] = useState(paymentPayload1)
-    
-    const [iframe, setIFrame] = useState({
+  const [payload, setPayload] = useState(paymentPayload1)
+  const [iframe, setIFrame] = useState({
       url: "",
       status: "",
       hasSucceed: null,
       error: ""
     })
-
-    const createOrder = ()=> {
+  const createOrder = () => {
       setIsVissible(prevIsVissible => ({
         ...prevIsVissible,
         createOrder: false,
-        makePayment: true
+        sendPayload: true
       }))
     axios.post('https://giftcardsapidev.azurewebsites.net/api/orders', payloadOrder)
         .then((res) => {
           setRespuesta(res.data.result)
           console.log(JSON.stringify(res.data.result))
        
-         setPayment(prevPayment =>({
-           ...prevPayment,
+         setPayload(prevPayload =>({
+           ...prevPayload,
            orderId: res.data.object.id
   
          }))
-          console.log(res.data.object.id)
         })
        
         .catch(() => {
-          setPayment(prevPayment => ({
-            ...prevPayment,
+          setPayload(prevPayload => ({
+            ...prevPayload,
             error: 'Error: Partner inválido.'
           }))
          })
     }  
-    const makePayment = () => {
-  
-      setIsVissible(prevIsVissible => ({
+    
+  const sendPayload = () => {
+
+    localStorage.setItem("payload" , JSON.stringify(payload))
+
+      setIsVissible(({
         createOrder: false,
-        makePayment: false
+        sendPayload: false
       }))
-        axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', payment)
+        axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', payload)
         .then((res) => {
           setIFrame(prevIFrame => {
             if(res.data.url){ 
@@ -64,8 +61,7 @@ function App() {
                   status: res.status,
                   hasSucceed: true
                 })
-        } 
-        console.log(prevIFrame)
+           } 
         })
       })
       .catch((err) =>{
@@ -80,79 +76,58 @@ function App() {
       })
     }
       let hadSuccess
+      
       if(iframe.hasSucceed === true) {
             console.log(iframe.url)
-             hadSuccess =  (
-               <PaymentFrame url={iframe.url} />
-                )
-           
-          } else if (iframe.error) {
-            hadSuccess = (
-              
-            <p>{iframe.error}</p>
-            )
-          }
+   
+            hadSuccess =  window.open(iframe.url, 'myFrame')
     
-    const passPayload2 = () => {
-       setPayment(paymentPayload2)
-
-        // Automáticamente arroja error porque la data de paymentPayload2 está incompleta
-              
-       console.log(payment)
-
-       const removeIFrame = () => {
-           document.getElementById("payment-iframe"). remove();
+      } else if (iframe.error) {
+            hadSuccess = (<p>{iframe.error}</p>)
           }
-       removeIFrame();
 
-       axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', payment)
-        .then((res)=> {
-            console.log(res)
-            })
-        .catch((err) => {
-            setPayment(prevPayment => ({
-                ...prevPayment,
-                error: true,
-                message: "Error al realizar pago con 3DSecure"
-              }))
-            })
+    const on3DSComplete=()=> {
+      document.getElementById('payment-iframe').remove();  
+
+      axios.post('https://giftcardsapidev.azurewebsites.net/api/payment', JSON.parse(localStorage.getItem('payload')))
+      .then(dat => console.log(dat.data))
+
           }
-    let hidePaymentBtn
-          payment.error 
-            ? hidePaymentBtn='callback-page-btn oculto' 
-            : hidePaymentBtn= 'callback-page-btn'
-
-    return (
+    window.addEventListener('message', function(ev){
+           if(ev.data === '3DS-authentication-complete') {
+               on3DSComplete();
+           }
+       },false)
+  return (
       <div>
-      <div className="App">
-          <img className={iframe.hasSucceed ? "img oculto" : "img"} src="https://picsum.photos/250" />
-          {isVissible.createOrder && (<div>
-        <br />
-        <button className="create-order" onClick={createOrder}> Crear orden </button></div>)}
-        
-        {payment.error ? (<p>{payment.error}</p>): null }
-        
-        {respuesta === 'Success' ? 
-          (<div>
-              {isVissible.makePayment && 
-              <button className="create-order" onClick={makePayment} >Pagar</button>}
-          </div>) 
-          : null}
-        <br />
-        <div className="link">
-            {iframe.url && 
-              <button 
-                className={hidePaymentBtn}
-                onClick={passPayload2}
-              > 
-                Callback page
-              </button>}
-              <div>
-                {payment.error && <h3>{payment.message}</h3>}
-              </div>
-         </div>
-          <div className="iframe-container">{hadSuccess}</div>      
-      </div>   
+        <div className="App">
+    
+            <img className={iframe.hasSucceed ? "img oculto" : "img"} src="https://picsum.photos/250" />
+            {isVissible.createOrder && (<div>
+            <br />
+            <button className="create-order" onClick={createOrder}> Crear orden </button></div>)}
+            
+            {payload.error ? (<p>{payload.error}</p>): null }
+          
+            {respuesta === 'Success' ? (
+            <div>
+                {isVissible.sendPayload && 
+                <button className="create-order" onClick={sendPayload}> Pagar </button>}
+            </div>) 
+            : null}
+            <br />
+                  
+            <div className="iframe-container">
+            <iframe 
+              name='myFrame'
+              id="payment-iframe" 
+              title="payment-window" 
+              width="600px" 
+              height="500px"
+              >
+          </iframe>
+            </div>
+        </div>   
       </div>
     );
   }

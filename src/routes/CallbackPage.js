@@ -1,22 +1,16 @@
-import React, {useState, useEffect} from 'react'
-import axios from 'axios';
-import payloadOrder from '../data/payloadOrder';
-import paymentPayload1 from '../paymentPayload1';
-import paymentPayload2 from '../paymentPayload2';
-import {Link, useNavigate} from 'react-router-dom'
+import React, {useEffect} from 'react'
 
+const CallbackPage = () => {
+  useEffect(()=> {
+    window.top.postMessage('3DS-authentication-complete');
+  },[])
 
-const CallbackPage = (props) => {
-
-  console.log('callback page')
   return(
-    <div>
-      <div>
-          {/* {payment.error && <h3>{payment.message}</h3>} */}
-      </div>
+    <div className="App">
+         <h2 className="callback-page">This is the callbackpage</h2>
+        
     </div>
   )
   }
-
 
 export default CallbackPage
