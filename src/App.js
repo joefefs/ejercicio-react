@@ -19,7 +19,6 @@ function App() {
     error: "",
   });
   const [apiResponse, setApiResponse] = useState({});
-  const [viss, setViss] = useState(false);
   const createOrder = () => {
     setIsVissible((prevIsVissible) => ({
       ...prevIsVissible,
