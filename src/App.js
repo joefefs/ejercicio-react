@@ -17,6 +17,7 @@ function App() {
     hasSucceed: null,
     error: "",
   });
+  const [apiResponse, setApiResponse] = useState({});
   const createOrder = () => {
     setIsVissible((prevIsVissible) => ({
       ...prevIsVissible,
@@ -90,19 +91,24 @@ function App() {
 
   const on3DSComplete = () => {
     document.getElementById("payment-iframe").remove();
-
-    axios
-      .post(
-        "https://giftcardsapidev.azurewebsites.net/api/payment",
-        JSON.parse(localStorage.getItem("payload"))
-      )
-      .then((dat) => console.log(dat.data));
   };
+
   window.addEventListener(
     "message",
     function (ev) {
       if (ev.data === "3DS-authentication-complete") {
         on3DSComplete();
+        axios
+          .post(
+            "https://giftcardsapidev.azurewebsites.net/api/payment",
+            JSON.parse(localStorage.getItem("payload"))
+          )
+          .then((dat) => {
+            setApiResponse({
+              ...dat.data[0],
+              src: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${apiResponse.number}`
+            });
+          });
       }
     },
     false
@@ -110,6 +116,7 @@ function App() {
   return (
     <div>
       <div className="App">
+
         <img
           className={iframe.hasSucceed ? "img oculto" : "img"}
           src="https://picsum.photos/250"
@@ -144,9 +151,15 @@ function App() {
             id="payment-iframe"
             title="payment-window"
             width="600px"
-            height="500px"
+            height="auto"
           ></iframe>
         </div>
+        <ul className={apiResponse.src == false ? "list oculto" : "list"}>
+        <li><strong>uuid:</strong>  {JSON.stringify(apiResponse.uuid)}</li>
+        <li><strong>name:</strong> {JSON.stringify(apiResponse.name)}</li>
+        <li><strong>amount:</strong> {(parseInt(apiResponse.amount)/100)}</li>
+        <li><strong>type:<br /><br /></strong><img src={apiResponse.src} /></li>
+      </ul>
       </div>
     </div>
   );
