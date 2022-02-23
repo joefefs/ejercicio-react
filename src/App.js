@@ -18,6 +18,7 @@ function App() {
     error: "",
   });
   const [apiResponse, setApiResponse] = useState({});
+  const [viss, setViss] = useState(false);
   const createOrder = () => {
     setIsVissible((prevIsVissible) => ({
       ...prevIsVissible,
@@ -91,6 +92,7 @@ function App() {
 
   const on3DSComplete = () => {
     document.getElementById("payment-iframe").remove();
+    setViss((prevViss) => !prevViss);
   };
 
   window.addEventListener(
@@ -106,7 +108,7 @@ function App() {
           .then((dat) => {
             setApiResponse({
               ...dat.data[0],
-              src: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${apiResponse.number}`
+              src: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${apiResponse.number}`,
             });
           });
       }
@@ -116,7 +118,6 @@ function App() {
   return (
     <div>
       <div className="App">
-
         <img
           className={iframe.hasSucceed ? "img oculto" : "img"}
           src="https://picsum.photos/250"
@@ -154,12 +155,31 @@ function App() {
             height="auto"
           ></iframe>
         </div>
-        <ul className={apiResponse.src == false ? "list oculto" : "list"}>
-        <li><strong>uuid:</strong>  {JSON.stringify(apiResponse.uuid)}</li>
-        <li><strong>name:</strong> {JSON.stringify(apiResponse.name)}</li>
-        <li><strong>amount:</strong> {(parseInt(apiResponse.amount)/100)}</li>
-        <li><strong>type:<br /><br /></strong><img src={apiResponse.src} /></li>
-      </ul>
+        <ul className="list">
+          <li>
+            <strong>uuid:</strong> {JSON.stringify(apiResponse.uuid)}
+          </li>
+          <li>
+            <strong>name:</strong> {JSON.stringify(apiResponse.name)}
+          </li>
+          <li>
+            <strong>amount:</strong> {parseInt(apiResponse.amount)}
+            <strong>
+              {" "}
+              <br />
+              Type of:{" "}
+            </strong>
+            {typeof parseInt(apiResponse.amount)}
+          </li>
+          <li>
+            <strong>
+              type:
+              <br />
+              <br />
+            </strong>
+            <img src={apiResponse.src} />
+          </li>
+        </ul>
       </div>
     </div>
   );
