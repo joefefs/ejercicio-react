@@ -92,7 +92,6 @@ function App() {
 
   const on3DSComplete = () => {
     document.getElementById("payment-iframe").remove();
-    setViss((prevViss) => !prevViss);
   };
 
   window.addEventListener(
